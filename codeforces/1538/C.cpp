@@ -25,55 +25,87 @@ void solve() {
   // count number of pairs ai + aj <= r
   // count number of pairs ai + aj <= l - 1
   
-  // l = 4 r = 7
+  // l = 5 r = 8
   // [1,2,3,4,5]
+  // 1 (5, 4, 3, 2) - (3, 2) = 2
+  // 2 (5, 4, 3) - () = 3
+  // 3 (5, 4) - () = 2
+  // 4 () - () = 0
+  // 5 () - () = 0
+  // ans = 7
+  //
+  // l = 4, r = 7
+  // [1, 2, 5]
+  // 1 (5, 2) - (2) = 1
+  // 2 (5) - () = 1
+  // ans = 2
+
+#if DEBUG
+  cout << "l = " << l << endl;
+  cout << "r = " << r << endl;
+  for(auto x : v)
+    cout << x << " ";
+  cout << endl;
+#endif
   
-  auto right_ans = [&] (int i) {
-    // binary search for the largest
-    // number that is less than or equal 
-    // to r - v[i]
-    int temp = -1;
+  long long ans = 0;
+  for (int i = 0; i < v.size(); i++) {
+    // right bound
+    // greatest number <= r - v[i]
+    int r_bound = -1;
     int ll = 0;
     int rr = v.size() - 1;
     while (ll <= rr) {
       int mid = ll + (rr - ll) / 2;
       if (v[mid] <= r - v[i]) {
-        temp = mid; // satisfies condition
-        ll = mid + 1; // there may be a larger answer
+        r_bound = mid;
+        ll = mid + 1;
       } else {
-        rr = mid - 1; // test val too big, search to the left
+        rr = mid - 1;
       }
     }
-    return temp;
-  };
+    int r_bound_pairs;
+    if (r_bound == -1)
+      r_bound_pairs = 0;  
+    else
+      r_bound_pairs = r_bound - i;
 
-  auto left_ans = [&] (int i) {
-    int temp = -1;
-    int ll = 0;
-    int rr = v.size() - 1;
+    // left bound
+    // greatest number <= l - v[i] - 1
+    int l_bound = -1;
+    ll = i;
+    rr = v.size() - 1;
     while (ll <= rr) {
       int mid = ll + (rr - ll) / 2;
-      if (v[mid] >= l - 1) {
-        temp = mid; // satisfies condition
-        rr = mid - 1; // there may be a smaller answer, search left
-      } else {
+      if (v[mid] <= l - v[i] - 1) {
+        l_bound = mid;
         ll = mid + 1;
+      } else {
+        rr = mid - 1;
       }
     }
-    return temp;
-  };
+    int l_bound_pairs;
+    if (l_bound == -1)
+      l_bound_pairs = 0;
+    else
+      l_bound_pairs = l_bound - i;
 
-  int ans = 0;
-  for (int i = 0; i << v.size(); i++) {
-    int left_bound = left_ans(i);
-    int right_bound = right_ans(i);
-    if (left_bound == -1 || right_bound == -1) {
-      continue;
-    }
-    ans += right_bound - left_bound;
+    if (r_bound_pairs > l_bound_pairs)
+      ans += r_bound_pairs - l_bound_pairs;
+
+#if DEBUG
+    cout << "i = " << i << endl;
+    cout << "v[i] = " << v[i] << endl;
+    cout << "l_bound = " << l_bound << endl;
+    cout << "r_bound = " << r_bound << endl;
+    cout << "ans = " << ans << endl;
+    cout << endl;
+#endif
+
   }
 
   cout << ans << endl;
+  
 }
 
 int main() {
